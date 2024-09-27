@@ -1,0 +1,163 @@
+time window:
+  begin: 2018-04-14T20:00:00Z
+  end: 2018-04-15T03:00:00Z
+obs filter data:
+- obs space:
+    name: Satwind
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/satwind_obs_2018041500_m.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/satwind_obs_2018041500_m_filterdata_out.nc4
+    simulated variables: [windEastward, windNorthward]
+  test data:
+    datetime variables:
+    - name: MetaData/dateTime
+    float variables:
+    - name: ObsValue/windEastward
+    - name: ObsError/windNorthward
+    - name: MetaData/latitude
+    integer variables:
+    - name: ObsType/windEastward
+    - name: ObsType/windNorthward
+    string variables:
+    - name: MetaData/stationIdentification
+  geovals:
+    filename: Data/ufo/testinput_tier_1/satwind_geoval_2018041500_m.nc4
+  geovals variables:
+  - name: GeoVaLs/eastward_wind
+  - name: GeoVaLs/northward_wind
+  - name: GeoVaLs/air_pressure
+  obs diagnostics:
+    filename: Data/ufo/testinput_tier_1/satwind_geoval_2018041500_m.nc4
+  obs diagnostics variables:
+  - name: ObsDiag/surface_roughness_length
+  HofX:
+    group: GsiHofX
+    variables:
+    - name: HofX/windEastward
+    - name: HofX/windNorthward
+  ObsError:
+    variables:
+    - name: ObsErrorData/windEastward
+    - name: ObsErrorData/windNorthward
+  QCFlags:
+    variables:
+    - name: QCFlagsData/windEastward
+    - name: QCFlagsData/windNorthward
+  float obs functions:
+  - variable:
+      name: ObsFunction/Conditional
+      options:
+        cases: []
+        defaultvalue: 1.0
+    expected value: 1.0
+  int obs functions:
+  - variable:
+      name: IntObsFunction/Conditional
+      options:
+        cases: []
+        defaultvalue: 1
+    expected value: 1
+  string obs functions:
+  - variable:
+      name: StringObsFunction/Conditional
+      options:
+        cases: []
+        defaultvalue: abc
+    expected value: abc
+  datetime obs functions:
+  - variable:
+      name: DateTimeObsFunction/Conditional
+      options:
+        cases: []
+        defaultvalue: 2000-01-02T03:04:05Z
+    expected value: 2000-01-02T03:04:05Z
+- obs space:
+    name: amsua_n19
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/amsua_n19_obs_2018041500_m_with_diag_flags.nc4
+    simulated variables: [brightnessTemperature]
+    channels: 1-10,15
+  test data:
+    datetime variables:
+    - name: MetaData/dateTime
+    float variables:
+    - name: ObsValue/brightnessTemperature_1
+    - name: MetaData/longitude
+    float variables vector only:
+    - name: MetaData/sensorCentralFrequency
+    integer variables:
+    - name: PreQC/brightnessTemperature_12
+    bool variables:
+    - name: DiagnosticFlags/FlagA/brightnessTemperature_5
+    - name: DiagnosticFlags/FlagB/brightnessTemperature_8
+  geovals:
+    filename: Data/ufo/testinput_tier_1/amsua_n19_geoval_2018041500_m.nc4
+  geovals variables:
+    - name: GeoVaLs/surface_temperature_where_snow
+    - name: GeoVaLs/soil_temperature
+    - name: GeoVaLs/volume_fraction_of_condensed_water_in_soil
+    - name: GeoVaLs/surface_wind_speed
+    - name: GeoVaLs/soil_type
+    - name: GeoVaLs/air_temperature
+    - name: GeoVaLs/air_pressure
+    - name: GeoVaLs/air_pressure_levels
+    - name: GeoVaLs/humidity_mixing_ratio
+  obs diagnostics:
+    filename: Data/ufo/testinput_tier_1/amsua_n19_geoval_2018041500_m.nc4
+  obs diagnostics variables:
+    - name: ObsDiag/surface_snow_thickness
+    - name: ObsDiag/vegetation_type_index
+  HofX:
+    group: GsiHofX
+    variables:
+    - name: HofX/brightnessTemperature
+      channels: 1-10,15
+  ObsError:
+    variables:
+    - name: ObsErrorData/brightnessTemperature
+      channels: 1-10,15
+  QCFlags:
+    variables:
+    - name: QCFlagsData/brightnessTemperature
+      channels: 1-10,15
+- obs space:
+    name: skipDerived false
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/derived_variables.nc4
+    simulated variables: [airTemperature]
+  skipDerived: false
+  test data:
+    datetime variables:
+    - name: MetaData/dateTime
+    float variables:
+    - name: ObsValue/airTemperature
+    integer variables:
+    - name: QCFlags/airTemperature
+    string variables:
+    - name: MetaData/stationIdentification
+- obs space:
+    name: skipDerived true
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/derived_variables.nc4
+    simulated variables: [airTemperature]
+  skipDerived: true
+  test data:
+    datetime variables:
+    - name: MetaData/dateTime
+    float variables:
+    - name: ObsValue/airTemperature
+    integer variables:
+    - name: QCFlags/airTemperature
+    string variables:
+    - name: MetaData/stationIdentification

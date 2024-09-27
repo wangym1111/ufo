@@ -1,0 +1,34 @@
+#
+#=== Heigth to presure conversion for vertical profile ===#
+#
+
+time window:
+  begin: 2015-01-08T20:30:00Z
+  end: 2015-01-09T03:30:00Z
+
+observations:
+- obs space:
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conversion_height2pressure.nc4
+      obsgrouping:
+        group variables: ["stationIdentification"]
+        sort variable: "dateTime"
+        sort order: "descending"
+    simulated variables: [airTemperature, relativeHumidity, geopotentialHeight, dewPointTemperature]
+  obs filters:
+  - filter: Variable Transforms
+    Transform: PressureFromHeightForICAO
+    Method: UKMO
+    height coordinate: geopotentialHeight
+    pressure coordinate: pressure
+    pressure group: MetaData
+  compareVariables:
+  - test:
+      name: DerivedMetaData/pressure
+    reference:
+      name: TestReference/pressure_ICAO_reference
+    relTol: 1.0e-5
+ 

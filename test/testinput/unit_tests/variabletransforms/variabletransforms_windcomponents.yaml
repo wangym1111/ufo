@@ -1,0 +1,103 @@
+time window:
+  begin: 2018-04-14T20:00:00Z
+  end: 2018-04-15T03:00:00Z
+
+observations:
+- obs space:
+    name: Satwind
+    #  Ioda file we want to apply the filter to
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/wind_unit_transforms_2018041500.nc4
+#    obsdataout:
+#      engine:
+#        type: H5File
+#        obsfile: Data/windcomponents_2018041500_output.nc4
+    simulated variables: [windEastward, windNorthward]
+  obs filters:
+  - filter: Variable Transforms
+    Transform: WindComponents
+  passedBenchmark: 148
+  compareVariables:                #  test output matches precalculated values
+    - reference:
+        name: TestReference/windEastward
+      test:
+        name: DerivedObsValue/windEastward
+      absTol: 5.0e-5
+    - reference:
+        name: TestReference/windNorthward
+      test:
+        name: DerivedObsValue/windNorthward
+      absTol: 5.0e-5
+
+- obs space:
+    name: Satwind
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/wind_unit_transforms_missing_values_2018041500.nc4
+    simulated variables: [windSpeed, windDirection]
+  obs filters:
+  - filter: Variable Transforms
+    Transform: WindComponents
+    FillMissingDerivedFromOriginal: true
+  compareVariables:                #  test output matches precalculated values
+    - reference:
+        name: TestReference/windEastward
+      test:
+        name: DerivedObsValue/windEastward
+      absTol: 5.0e-5
+    - reference:
+        name: TestReference/windNorthward
+      test:
+        name: DerivedObsValue/windNorthward
+      absTol: 5.0e-5
+
+- obs space:
+    name: Satwind
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/wind_unit_transforms_missing_values_2d_2018041500.nc4
+    simulated variables: [windSpeed, windDirection]
+    channels: 1-4
+  obs filters:
+  - filter: Variable Transforms
+    Transform: WindComponents
+    FillMissingDerivedFromOriginal: true
+  compareVariables:                #  test output matches precalculated values
+    - reference:
+        name: TestReference/windEastward
+      test:
+        name: DerivedObsValue/windEastward
+      absTol: 5.0e-5
+    - reference:
+        name: TestReference/windNorthward
+      test:
+        name: DerivedObsValue/windNorthward
+      absTol: 5.0e-5
+
+- obs space:
+    name: Surface
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/wind_unit_transforms_surface.nc4
+    simulated variables: [windEastwardAt10M, windNorthwardAt10M]
+  obs filters:
+  - filter: Variable Transforms
+    Transform: WindComponents
+    wind speed variable: windSpeedAt10M
+    wind direction variable: windDirectionAt10M
+  compareVariables:                #  test output matches precalculated values
+    - reference:
+        name: TestReference/windEastwardAt10M
+      test:
+        name: DerivedObsValue/windEastwardAt10M
+      absTol: 5.0e-5
+    - reference:
+        name: TestReference/windNorthwardAt10M
+      test:
+        name: DerivedObsValue/windNorthwardAt10M
+      absTol: 5.0e-5

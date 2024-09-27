@@ -1,0 +1,42 @@
+#
+#=== Profile processing for wind speed interpolation ===#
+#
+
+time window:
+  begin: 2018-04-14T20:30:00Z
+  end: 2018-04-15T03:30:00Z
+
+observations:
+- obs space:
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_uinterp.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
+        sort order: "descending"
+    simulated variables: [windEastward, windNorthward]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_uinterp_obsfilter_out.nc4
+  obs filters:
+  - filter: Conventional Profile Processing
+    filter variables:
+    - name: windEastward
+    - name: windNorthward
+    Checks: ["Basic", "UInterp"]
+    compareWithOPS: false
+    flagBasicChecksFail: true
+    PrintStationID: true
+  HofX: HofX
+  passedBenchmark: 5549
+  benchmarkFlag: 24
+  flaggedBenchmark: 93
+  compareVariables:
+  - test:
+      name: DiagnosticFlags/Profile/Interpolation/windEastward
+    reference:
+      name: DiagnosticFlagsReference/Profile/Interpolation/windEastward

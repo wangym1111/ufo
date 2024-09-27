@@ -1,0 +1,21 @@
+time window:
+  begin: 1948-05-21T08:59:59Z
+  end: 2021-05-21T15:00:00Z
+
+observations:
+- obs space:
+    name: ssmis_f17
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/ssmis_f17_20210521T1200Z_obfn_orbit_angle_ref.nc4
+    simulated variables: [brightnessTemperature]
+    channels: &channels 1-24
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/ssmis_f17_20210521T1200Z_obfn_orbit_angle_out.nc4
+  obs function:
+    name: ObsFunction/OrbitAngle
+    variables: [sensorOrbitAngle]
+    tolerance: 1.0e-5

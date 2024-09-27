@@ -1,0 +1,123 @@
+# Test bias correction of multiple single-channel variables.
+
+time window:
+  begin: '2018-04-14T20:30:00Z'
+  end: '2018-04-15T03:30:00Z'
+
+observations:
+# Two variable predictors
+- obs space:
+    name: Aircraft
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_s.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_s_out_bc_2var.nc4
+    simulated variables: [airTemperature, specificHumidity]
+  obs operator:
+    name: VertInterp
+    observation alias file: ../resources/namemap/test_name_map.yaml
+    vertical coordinate: air_pressure
+    observation vertical coordinate: pressure
+    interpolation method: log-linear
+  geovals:
+    filename: Data/ufo/testinput_tier_1/aircraft_geoval_2018041500_s.nc4
+  obs bias:
+    input file: Data/ufo/testinput_tier_1/aircraft_artificial_bias.nc4
+    variational bc:
+      predictors:
+        - name: constant
+        - name: sineOfLatitude
+  rms ref: 188.80571
+  tolerance: 1.0e-6
+# One static and one variable predictor
+- obs space:
+    name: Aircraft
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_s.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_s_out_bc_1static_1var.nc4
+    simulated variables: [airTemperature, specificHumidity]
+  obs operator:
+    name: VertInterp
+    observation alias file: ../resources/namemap/test_name_map.yaml
+    vertical coordinate: air_pressure
+    observation vertical coordinate: pressure
+    interpolation method: log-linear
+  geovals:
+    filename: Data/ufo/testinput_tier_1/aircraft_geoval_2018041500_s.nc4
+  obs bias:
+    input file: Data/ufo/testinput_tier_1/aircraft_artificial_bias.nc4
+    static bc:
+      # All static BC predictors have unit cofficients.
+      predictors:
+      - name: sineOfLatitude
+    variational bc:
+      # The initial coefficients of predictors used in VarBC are loaded from the input file.
+      predictors:
+      - name: constant
+  rms ref: 183.78023
+  tolerance: 1.0e-6
+# Two static predictors; input file option present
+- obs space:
+    name: Aircraft
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_s.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_s_out_bc_2static.nc4
+    simulated variables: [airTemperature, specificHumidity]
+  obs operator:
+    name: VertInterp
+    observation alias file: ../resources/namemap/test_name_map.yaml
+    vertical coordinate: air_pressure
+    observation vertical coordinate: pressure
+    interpolation method: log-linear
+  geovals:
+    filename: Data/ufo/testinput_tier_1/aircraft_geoval_2018041500_s.nc4
+  obs bias:
+    # This file should effectively be ignored, since there are no variable coefficients
+    input file: Data/ufo/testinput_tier_1/aircraft_artificial_bias.nc4
+    static bc:
+      predictors:
+      - name: constant
+      - name: sineOfLatitude
+  rms ref: 180.93765
+  tolerance: 1.0e-6
+# Two static predictors; input file option absent
+- obs space:
+    name: Aircraft
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_s.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_s_out_bc_2static_no_bias_file.nc4
+    simulated variables: [airTemperature, specificHumidity]
+  obs operator:
+    name: VertInterp
+    observation alias file: ../resources/namemap/test_name_map.yaml
+    vertical coordinate: air_pressure
+    observation vertical coordinate: pressure
+    interpolation method: log-linear
+  geovals:
+    filename: Data/ufo/testinput_tier_1/aircraft_geoval_2018041500_s.nc4
+  obs bias:
+    static bc:
+      predictors:
+      - name: constant
+      - name: sineOfLatitude
+  rms ref: 180.93765
+  tolerance: 1.0e-6

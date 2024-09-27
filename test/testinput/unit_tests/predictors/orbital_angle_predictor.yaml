@@ -1,0 +1,60 @@
+
+time window:
+  begin: 2019-12-29T21:00:00Z
+  end: 2019-12-30T03:00:00Z
+
+observations:
+- obs space:
+    name: f17_ssmis
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/ssmis_obs_20191230T0000Z_orbital_angle.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/ssmis_obs_20191230T0000Z_orbital_angle_out.nc4
+    simulated variables: [brightnessTemperature]
+    channels: &channels 1-24
+  geovals:
+    filename: Data/ufo/testinput_tier_1/ssmis_geovals_20191230T0000Z_100subset.nc4
+  obs bias:
+    variational bc:
+      predictors:
+      - name: satelliteOrbitalAngle
+        order: 1
+        component: "cos"
+      - name: satelliteOrbitalAngle
+        order: 1
+        component: "sin"
+      - name: satelliteOrbitalAngle
+        order: 2
+        component: "cos"
+      - name: satelliteOrbitalAngle
+        order: 2
+        component: "sin"
+      - name: satelliteOrbitalAngle
+        order: 3
+        component: "cos"
+      - name: satelliteOrbitalAngle
+        order: 3
+        component: "sin"
+      - name: satelliteOrbitalAngle
+        order: 4
+        component: "cos"
+      - name: satelliteOrbitalAngle
+        order: 4
+        component: "sin"
+      - name: satelliteOrbitalAngle
+        order: 5
+        component: "cos"
+      - name: satelliteOrbitalAngle
+        order: 5
+        component: "sin"
+      - name: satelliteOrbitalAngle
+        order: 6
+        component: "cos"
+      - name: satelliteOrbitalAngle
+        order: 6
+        component: "sin"
+  tolerance: 1.e-5

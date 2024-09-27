@@ -1,0 +1,36 @@
+#
+#=== Setting a variety of sonde flags ===#
+#
+
+time window:
+  begin: 2019-06-14T20:30:00Z
+  end: 2019-06-15T03:30:00Z
+
+observations:
+- obs space:
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_sondeflags.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
+        sort order: "descending"
+    simulated variables: [windEastward]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_sondeflags_out.nc4
+  obs filters:
+  - filter: Conventional Profile Processing
+    filter variables:
+    - name: windEastward
+    Checks: ["Basic", "SondeFlags"]
+    compareWithOPS: false
+    flagBasicChecksFail: true
+    PrintStationID: true
+  HofX: HofX
+  passedBenchmark: 1714
+  benchmarkFlag: 24
+  flaggedBenchmark: 77

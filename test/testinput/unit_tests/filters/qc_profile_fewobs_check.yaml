@@ -1,0 +1,133 @@
+time window:
+  begin: 2020-12-31T23:59:00Z
+  end: 2021-01-01T00:01:00Z
+
+observations:
+- obs space:
+    name: test data
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+      obsgrouping:
+        group variables: ["sequenceNumber"]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/profile_filter_few_observationcheck_out1.nc4
+    simulated variables: [variable]
+  obs filters:
+  - filter: Profile Few Observations Check
+    filter variables:
+    - name: variable
+    threshold: 10
+  passedBenchmark: 90  # Rejects only profile 1, which has missing data
+- obs space:
+    name: test data
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+      obsgrouping:
+        group variables: ["sequenceNumber"]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/profile_filter_few_observationcheck_out2.nc4
+    simulated variables: [variable]
+  obs filters:
+  - filter: Profile Few Observations Check
+    filter variables:
+    - name: variable
+    threshold: 9
+  passedBenchmark: 99  # Accepts all profiles
+- obs space:
+    name: test data
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+      obsgrouping:
+        group variables: ["sequenceNumber"]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/profile_filter_few_observationcheck_out3.nc4
+    simulated variables: [variable]
+  obs filters:
+  - filter: Profile Few Observations Check
+    filter variables:
+    - name: variable
+    threshold: 11
+  passedBenchmark: 0  # Rejects all profiles
+- obs space:
+    name: test data
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+      obsgrouping:
+        group variables: ["sequenceNumber"]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/profile_filter_few_observationcheck_out4.nc4
+    simulated variables: [variable]
+  obs filters:
+  - filter: Profile Few Observations Check
+    filter variables:
+    - name: variable
+    threshold: 11
+    where:
+    - variable:
+        name: MetaData/sequenceNumber
+      maxvalue: 4       # First five profiles
+  passedBenchmark: 50   # Rejects all profiles, except those removed by where
+- obs space:
+    name: test data
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+      obsgrouping:
+        group variables: ["sequenceNumber"]
+    simulated variables: [variable]
+  obs filters:
+  - filter: Perform Action
+    where:
+    - variable:
+        name: DiagnosticFlags/LevelSubsampleReject/variable
+      value: is_true
+    actions:
+    - name: reject
+  - filter: Profile Few Observations Check
+    filter variables:
+    - name: variable
+    fraction: 0.5
+    where:
+    - variable:
+        name: DiagnosticFlags/LevelSubsampleReject/variable
+      value: is_false       # don't reject based on sub-sampled obs
+  passedBenchmark: 93   # accepts all profiles except those removed by Perform Action
+- obs space:
+    name: test data
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/profile_filter_testdata.nc4
+      obsgrouping:
+        group variables: ["sequenceNumber"]
+    simulated variables: [variable]
+  obs filters:
+  - filter: Perform Action
+    where:
+    - variable:
+        name: DiagnosticFlags/LevelSubsampleReject/variable
+      value: is_true
+    actions:
+    - name: reject
+  - filter: Profile Few Observations Check
+    filter variables:
+    - name: variable
+    fraction: 0.5
+  passedBenchmark: 89   # accepts all profiles except the last

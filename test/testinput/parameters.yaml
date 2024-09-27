@@ -1,0 +1,29 @@
+empty:
+  # Nothing to see here
+full:
+  # These parameters must be specified in the order the corresponding
+  # Parameter objects are declared in the C++ file; otherwise the
+  # serialization test, which isn't very sophisticated and simply relies
+  # on a string comparison, will fail.
+  opt_variable_parameter:
+    name: MetaData/latitude
+    channels: 1,5
+    options:
+      some_option: true
+simple_string:
+  opt_variable_parameter: MetaData/latitude
+no_channels:
+  opt_variable_parameter:
+    name: MetaData/latitude
+    options:
+      some_option: true
+complex_channels:
+  opt_variable_parameter:
+    channels: 1,5,10-15
+    name: MetaData/latitude
+missing_name:
+  opt_variable_parameter:
+misspelled_property:
+  opt_variable_parameter:
+    name: MetaData/latitude
+    canali: 1,5

@@ -1,0 +1,31 @@
+time window:
+  begin: '2020-09-03T15:00:00Z'
+  end: '2020-09-03T21:00:00Z'
+observations:
+- obs space:
+    name: CO
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/mopitt_co_2020090318_m.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/mopitt_co_2020090318_m_opr_out.nc4
+    simulated variables: [carbonmonoxideTotal]
+  obs operator:
+    name: ColumnRetrieval
+    nlayers_retrieval: 10
+    tracer variables: [volume_mixing_ratio_of_co]
+    isApriori: true
+    isAveragingKernel: true
+    stretchVertices: topbottom #options: top, bottom, topbottom, none
+    model units coeff: 1e-6 # ppmv to 1/1
+  linear obs operator test:
+    coef TL: 1.0e-9
+    tolerance TL: 1.0e-11
+    tolerance AD: 1.0e-13
+  geovals:
+    filename: Data/ufo/testinput_tier_1/mopitt_co_geoval_2020090318_m.nc4
+  rms ref: 0.019255562856267044
+  tolerance: 1.0e-3

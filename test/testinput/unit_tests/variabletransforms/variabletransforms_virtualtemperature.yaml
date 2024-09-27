@@ -1,0 +1,80 @@
+time window:
+  begin: 2020-10-01T05:00:00Z
+  end: 2020-10-01T07:00:00Z
+
+# The simplest test starts with airTemperature and specificHumidity to result in virtualTemperature.
+
+observations:
+- obs space:
+    name: test_virtual_temperature
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/2020100106_metars_small.nc
+    # obsdataout:
+#       engine:
+#         type: H5File
+#         obsfile: Data/metar_test.nc
+    simulated variables: [airTemperature, specificHumidity, virtualTemperature]
+    derived variables: [virtualTemperature]
+    observed variables: [airTemperature, specificHumidity]
+  obs filters:
+  - filter: Variable Transforms
+    Transform: "VirtualTemperature"
+    specific humidity variable: specificHumidity
+    temperature variable: airTemperature 
+    virtual temperature variable: virtualTemperature 
+
+  - filter: Perform Action
+    filter variables:
+    - name: virtualTemperature
+    action:
+      name: assign error
+      error parameter: 2.2
+
+  compareVariables:               # test output matches precalculated values
+    - reference:
+        name: TestReference/virtualTemperature
+      test:
+        name: DerivedObsValue/virtualTemperature
+      absTol: 1.0e-4
+
+  passedBenchmark: 99
+#
+# Now test using RH converted to specificHumidity to use in virtualTemperature calculation.
+#
+- obs space:
+    name: test_virttemperature2
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/2020100106_metars_small.nc
+    obsdataout:
+      engine:
+        type: H5File
+        obsfile: Data/metar_test2.nc
+    simulated variables: [airTemperature, relativeHumidity, specificHumidity, virtualTemperature, stationPressure]
+    derived variables: [specificHumidity, virtualTemperature]
+    observed variables: [airTemperature, relativeHumidity, stationPressure]
+  obs filters:
+  - filter: Variable Transforms
+    Transform: "SpecificHumidity"   # calculate specific humidity from relative humidity
+    pressure at 2m variable: stationPressure
+    temperature variable: airTemperature
+    relative humidity variable: relativeHumidity
+    specific humidity variable: specificHumidity
+
+  - filter: Variable Transforms
+    Transform: "VirtualTemperature"
+    specific humidity variable: specificHumidity
+    temperature variable: airTemperature 
+    virtual temperature variable: virtualTemperature 
+
+  compareVariables:               # test output matches precalculated values
+    - reference:
+        name: TestReference/virtualTemperature
+      test:
+        name: DerivedObsValue/virtualTemperature
+      absTol: 1.0e-4
+
+  passedBenchmark: 135

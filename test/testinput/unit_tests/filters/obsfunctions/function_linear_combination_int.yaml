@@ -1,0 +1,46 @@
+# Note that the linear combination function is a special case of the arithmetic function.
+
+time window:
+  begin: 2018-04-14T21:00:00Z
+  end: 2018-04-15T03:00:00Z
+
+observations:
+- obs space:
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sondes_obs_2018041500_s.nc4
+    simulated variables: [windEastward]
+  obs filters:
+  - filter: Variable Assignment
+    assignments:
+    - name: MetaData/variable_1
+      type: int
+      value: 1
+  - filter: Variable Assignment
+    assignments:
+    - name: MetaData/variable_2
+      type: int
+      value: 2
+  - filter: Variable Assignment
+    assignments:
+    - name: MetaData/variable_5
+      type: int
+      value: 5
+  - filter: Variable Assignment
+    assignments:
+    - name: MetaData/variable_1_plus_2
+      type: int
+      function:
+        name: IntObsFunction/LinearCombination
+        options:
+          variables:
+          - name: MetaData/variable_1
+          - name: MetaData/variable_2
+          coefs: [1, 2]
+  compareVariables:
+  - test:
+      name: MetaData/variable_1_plus_2
+    reference:
+      name: MetaData/variable_5

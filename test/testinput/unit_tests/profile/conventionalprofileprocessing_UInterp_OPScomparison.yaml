@@ -1,0 +1,28 @@
+#
+#=== Profile processing for wind speed interpolation: comparison with OPS values ===#
+#
+
+Sondes:
+  time window:
+    begin: 2000-01-01T00:00:00Z
+    end: 2030-01-01T00:00:00Z
+  obs space:
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_uinterp.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        #Sorting is not performed for this test in order to ensure exact correspondence with OPS
+    simulated variables: [windEastward, windNorthward]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_uinterp_ops_comparison_out.nc4
+  Conventional Profile Processing:
+    Checks: ["Basic", "UInterp"]
+    compareWithOPS: true
+    flagBasicChecksFail: true
+    PrintStationID: true
+    Comparison_Tol: 0.1

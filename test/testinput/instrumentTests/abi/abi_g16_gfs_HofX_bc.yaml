@@ -1,0 +1,47 @@
+time window:
+  begin: 2021-05-16T21:00:00Z
+  end: 2021-05-17T03:00:00Z
+
+observations:
+- obs operator:
+    name: CRTM
+    Absorbers: [H2O,O3,CO2]
+    obs options:
+      Sensor_ID: &Sensor_ID abi_g16 
+      EndianType: little_endian
+      CoefficientPath: Data/
+  obs space:
+    name: abi_g16 
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/instruments/radiance/abi_g16_obs_2021051700_m.nc4
+    simulated variables: [brightnessTemperature]
+    channels: &channels 7-16
+  geovals:
+    filename: Data/ufo/testinput_tier_1/instruments/radiance/abi_g16_geoval_2021051700_m.nc4
+  obs bias:
+    input file: Data/ufo/testinput_tier_1/instruments/radiance/satbias_abi_g16.2021051618.nc4
+    variational bc:
+      predictors:
+      - name: constant
+      - name: lapseRate
+        order: 2
+        tlapse: &abi_g16_tlap Data/ufo/testinput_tier_1/instruments/radiance/abi_g16_tlapmean.txt
+      - name: lapseRate
+        tlapse: *abi_g16_tlap
+      - name: emissivityJacobian
+# The scan angle here actually is used as for scan positions in the input ioda file to replicate gsi
+      - name: sensorScanAngle
+        var_name: sensorScanPosition
+        order: 4
+      - name: sensorScanAngle
+        var_name: sensorScanPosition
+        order: 3
+      - name: sensorScanAngle
+        var_name: sensorScanPosition
+        order: 2
+      - name: sensorScanAngle
+        var_name: sensorScanPosition
+  vector ref: ObsValue
+  tolerance: 1.e-1

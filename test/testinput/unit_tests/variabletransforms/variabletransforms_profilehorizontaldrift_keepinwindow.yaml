@@ -1,0 +1,45 @@
+# Compute profile horizontal drift using the 'keep in window' option.
+# The   end time is set to T01:23:20Z as opposed to the usual T03:00:00Z.
+# The test reference dateTime is changed accordingly; around 30 dates are modified.
+
+time window:
+  begin: 2019-06-14T21:00:00Z
+  end: 2019-06-15T01:23:20Z
+
+observations:
+- obs space:
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_profile_horizontal_drift_keep_in_window.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
+        sort order: "descending"
+    simulated variables: [geopotentialHeight, windSpeed, windDirection]
+  obs filters:
+    - filter: Variable Transforms
+      Transform: ProfileHorizontalDrift
+      height coordinate: height
+      keep in window: true
+      # Exclude BUFR sondes, whose position has already been measured.
+      where:
+      - variable:
+          name: MetaData/ObsType
+        is_not_in: 50500
+  compareVariables:
+    - reference:
+        name: TestReference/latitude
+      test:
+        name: MetaData/latitude
+      absTol: 1.0e-4
+    - reference:
+        name: TestReference/longitude
+      test:
+        name: MetaData/longitude
+      absTol: 1.0e-4
+    - reference:
+        name: TestReference/dateTime
+      test:
+        name: MetaData/dateTime

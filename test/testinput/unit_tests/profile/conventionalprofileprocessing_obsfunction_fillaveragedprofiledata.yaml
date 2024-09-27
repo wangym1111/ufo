@@ -1,0 +1,131 @@
+time window:
+  begin: 2000-01-01T00:00:00Z
+  end: 2030-01-01T00:00:00Z
+
+observations:
+- obs space:
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_profileaverageobs.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
+        sort order: "descending"
+    simulated variables: [airTemperature]
+    extension:
+      allocate companion records with length: 71
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_fillaveragedprofiledata_out1.nc4
+  geovals:
+    filename: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_profileaverageobs_geovals.nc4
+  obs filters:
+  - filter: Variable Assignment
+    assignments:
+      - name: DerivedMetaData/latitude
+        type: float
+        function:
+          name: ObsFunction/FillAveragedProfileData
+          options:
+            variable to copy: MetaData/latitude
+            model vertical coordinate: air_pressure_levels
+            observation vertical coordinate: MetaData/pressure
+  compareVariables:
+  - test:
+      name: DerivedMetaData/latitude
+    reference:
+      name: TestReference/latitude
+    relTol: 1.0e-8
+
+- obs space:
+    name: Observations are not grouped into records, throwing an exception
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_profileaverageobs.nc4
+    simulated variables: [airTemperature]
+    extension:
+      allocate companion records with length: 71
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_fillaveragedprofiledata_out2.nc4
+  geovals:
+    filename: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_profileaverageobs_geovals.nc4
+  obs filters:
+  - filter: Variable Assignment
+    assignments:
+      - name: DerivedMetaData/latitude
+        type: float
+        function:
+          name: ObsFunction/FillAveragedProfileData
+          options:
+            variable to copy: MetaData/latitude
+            model vertical coordinate: air_pressure_levels
+            observation vertical coordinate: MetaData/pressure
+  expectExceptionWithMessage: Group variables configuration is empty
+
+- obs space:
+    name: Extended ObsSpace is not used, throwing an exception
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_profileaverageobs.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
+        sort order: "descending"
+    simulated variables: [airTemperature]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_fillaveragedprofiledata_out3.nc4
+  geovals:
+    filename: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_profileaverageobs_geovals.nc4
+  obs filters:
+  - filter: Variable Assignment
+    assignments:
+      - name: DerivedMetaData/latitude
+        type: float
+        function:
+          name: ObsFunction/FillAveragedProfileData
+          options:
+            variable to copy: MetaData/latitude
+            model vertical coordinate: air_pressure_levels
+            observation vertical coordinate: MetaData/pressure
+  expectExceptionWithMessage: The extended obs space has not been produced
+
+- obs space:
+    name: A non-pressure variable is used as the model vertical coordinate, throwing an exception
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_profileaverageobs.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
+        sort order: "descending"
+    simulated variables: [airTemperature]
+    extension:
+      allocate companion records with length: 71
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_fillaveragedprofiledata_out4.nc4
+  geovals:
+    filename: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_profileaverageobs_geovals.nc4
+  obs filters:
+  - filter: Variable Assignment
+    assignments:
+      - name: DerivedMetaData/latitude
+        type: float
+        function:
+          name: ObsFunction/FillAveragedProfileData
+          options:
+            variable to copy: MetaData/latitude
+            model vertical coordinate: potential_temperature
+            observation vertical coordinate: MetaData/pressure
+  expectExceptionWithMessage: Model vertical coordinate must be a pressure

@@ -1,0 +1,42 @@
+#
+#=== Profile average wind speed ===#
+#
+
+time window:
+  begin: 2019-06-14T20:30:00Z
+  end: 2019-06-15T03:30:00Z
+
+observations:
+- obs space:
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_average_windspeed_obs_extended.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
+        sort order: "descending"
+    simulated variables: [windEastward, windNorthward]
+    extension:
+      allocate companion records with length: 71
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_average_windspeed_obsfilter_out.nc4.nc4
+  geovals:
+    filename: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_average_geovals_extended.nc4
+  obs filters:
+  - filter: Conventional Profile Processing
+    filter variables:
+    - name: windEastward
+    - name: windNorthward
+    Checks: ["Basic", "AveragePressure", "AverageWindSpeed"]
+    compareWithOPS: false
+    flagBasicChecksFail: true
+    PrintStationID: true
+    alternativeVerticalCoordinate: {"air_pressure_levels_minus_one": "air_pressure_levels_minus_one"}
+  HofX: HofX
+  passedBenchmark: 3318
+  benchmarkFlag: 24
+  flaggedBenchmark: 638

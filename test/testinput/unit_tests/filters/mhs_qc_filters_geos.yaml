@@ -1,0 +1,316 @@
+time window:
+  begin: 2020-12-14T21:00:00Z
+  end: 2020-12-15T03:00:00Z
+
+observations:
+- obs operator:
+    name: CRTM
+    Absorbers: [H2O,O3,CO2]
+    Clouds: [Water, Ice, Rain, Snow]
+    Cloud_Fraction: 1.0
+    linear obs operator:
+      Absorbers: [H2O,O3,CO2]
+      Clouds: [Water]
+    obs options:
+      Sensor_ID: &Sensor_ID  mhs_metop-b
+      EndianType: little_endian
+      CoefficientPath: Data/
+  obs space:
+    name: mhs_metop-b
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/geos.mhs_metop-b_obs.2020121500_m.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/geos.mhs_metop-b_obs_2020121500_out_m.nc4
+    simulated variables: [brightnessTemperature]
+    channels: &all_channels 1-5
+  geovals:
+    filename: Data/ufo/testinput_tier_1/geos.mhs_metop-b_geoval_2020121500_m.nc4
+  obs bias:
+    input file: Data/ufo/testinput_tier_1/geos.bc.mhs_metop-b.2020121500.satbias.nc4
+    variational bc:
+      predictors:
+      - name: constant
+      - name: lapseRate
+        order: 2
+        tlapse: &mhsmctlap Data/ufo/testinput_tier_1/geos.bc.mhs_metop-b.2020121500.tlapse.txt
+      - name: lapseRate
+        tlapse: *mhsmctlap
+      - name: emissivityJacobian
+      - name: sensorScanAngle
+        order: 4
+      - name: sensorScanAngle
+        order: 3
+      - name: sensorScanAngle
+        order: 2
+      - name: sensorScanAngle
+  obs filters:
+  - filter: Bounds Check
+    filter variables:
+    - name: brightnessTemperature
+      channels: *all_channels
+    minvalue: 50.0
+    maxvalue: 550.0
+  - filter: Domain Check
+    filter variables:
+    - name: brightnessTemperature
+      channels: 1-5
+    where:
+    - variable:
+        name: MetaData/sensorScanPosition
+      minvalue: 10
+      maxvalue: 81
+  - filter: BlackList
+    filter variables:
+    - name: brightnessTemperature
+      channels: 1-3
+    where:
+    - variable:
+        name: MetaData/latitude
+      minvalue: -25.0
+      maxvalue: -10.0
+    - variable:
+        name: MetaData/longitude
+      minvalue: 260.0
+      maxvalue: 300.0
+    action:
+      name: reject
+  - filter: BlackList
+    filter variables:
+    - name: brightnessTemperature
+      channels: 1-5
+    where:
+    - variable:
+        name: GeoVaLs/surface_snow_area_fraction
+      minvalue: 0.01
+# ice surface
+  - filter: BlackList
+    filter variables:
+    - name: brightnessTemperature
+      channels: 1-5
+    where:
+    - variable:
+        name: GeoVaLs/ice_area_fraction
+      minvalue: 0.01
+# mixed surface
+  - filter: BlackList
+    filter variables:
+    - name: brightnessTemperature
+      channels: 1-5
+    where:
+    - variable:
+        name: GeoVaLs/water_area_fraction
+      maxvalue: 0.99
+    - variable:
+        name: GeoVaLs/land_area_fraction
+      maxvalue: 0.99
+  - filter: BlackList
+    filter variables:
+    - name: brightnessTemperature
+      channels: 1-5
+    where:
+    - variable:
+        name: GeoVaLs/water_area_fraction
+      minvalue: 0.99
+    - variable:
+        name: GeoVaLs/average_surface_temperature_within_field_of_view
+      maxvalue: 275
+  - filter: BlackList
+    filter variables:
+    - name: brightnessTemperature
+      channels: 1-5
+    where:
+    - variable:
+        name: GeoVaLs/water_area_fraction
+      maxvalue: 0.99
+    action:
+      name: assign error
+      error function:
+        name: ObsFunction/ObsErrorModelRamp
+        channels: 1-5
+        options:
+          channels: 1-5
+          xvar:
+            name: ObsFunction/CLWRetSymmetricMW
+            options:
+              clwret_ch89v: 1
+              clwret_ch166v: 2
+              clwret_types: [ObsValue, HofX]
+              bias_application: HofX
+              test_bias: ObsBiasData
+          x0:    [ 0.050,  0.050,  0.050,
+                   0.050,  0.050]
+          x1:    [ 25.00,  25.00,  25.00,
+                   25.00,  25.00]
+          err0:  [300.00, 300.00,  2.500,
+                   2.000,  2.000]
+          err1:  [700.00,  700.00, 30.00,
+                   50.00,  60.00]
+  - filter: BlackList
+    filter variables:
+    - name: brightnessTemperature
+      channels: 1-5
+    where:
+    - variable:
+        name: GeoVaLs/water_area_fraction
+      minvalue: 0.99
+    action:
+      name: assign error
+      error function:
+        name: ObsFunction/ObsErrorModelRamp
+        channels: 1-5
+        options:
+          channels: 1-5
+          xvar:
+            name: ObsFunction/CLWRetSymmetricMW
+            options:
+              clwret_ch89v: 1
+              clwret_ch166v: 2
+              clwret_types: [ObsValue, HofX]
+              bias_application: HofX
+              test_bias: ObsBiasData
+          x0:    [ 0.050,  0.050,  0.050,
+                   0.050,  0.050]
+          x1:    [ 25.00,  25.00,  25.00,
+                   25.00,  25.00]
+          err0:  [300.00, 300.00,  2.500,
+                   2.000,  2.000]
+          err1:  [350.00,  350.00, 15.00,
+                   25.00,  30.00]
+#  Topography check
+  - filter: BlackList
+    filter variables:
+    - name: brightnessTemperature
+      channels: *all_channels
+    action:
+      name: inflate error
+      inflation variable:
+        name: ObsFunction/ObsErrorFactorTopoRad
+        channels: *all_channels
+        options:
+          sensor: *Sensor_ID
+          channels: *all_channels
+#  Transmittnace Top Check
+  - filter: BlackList
+    filter variables:
+    - name: brightnessTemperature
+      channels: *all_channels
+    action:
+      name: inflate error
+      inflation variable:
+        name: ObsFunction/ObsErrorFactorTransmitTopRad
+        channels: *all_channels
+        options:
+          channels: *all_channels
+#  Gross check
+  - filter: Background Check
+    filter variables:
+    - name: brightnessTemperature
+      channels: *all_channels
+    where:
+    - variable:
+        name: GeoVaLs/water_area_fraction
+      maxvalue: 0.99
+    function absolute threshold:
+    - name: ObsFunction/ObsErrorBoundMW
+      channels: *all_channels
+      options:
+        sensor: *Sensor_ID
+        channels: *all_channels
+        threshold: 2.0
+        obserr_bound_latitude:
+          name: ObsFunction/ObsErrorFactorLatRad
+          options:
+            latitude_parameters: [0.0, 1.0, 0.0, 1.0]
+        obserr_bound_transmittop:
+          name: ObsFunction/ObsErrorFactorTransmitTopRad
+          channels: *all_channels
+          options:
+            channels: *all_channels
+        obserr_bound_topo:
+          name: ObsFunction/ObsErrorFactorTopoRad
+          channels: *all_channels
+          options:
+            channels: *all_channels
+            sensor: *Sensor_ID
+        obserr_function:
+          name: ObsFunction/ObsErrorModelRamp
+          channels: *all_channels
+          options:
+            channels: *all_channels
+            xvar:
+              name: ObsFunction/CLWRetSymmetricMW
+              options:
+                clwret_ch89v: 1
+                clwret_ch166v: 2
+                clwret_types: [ObsValue, HofX]
+                bias_application: HofX
+            x0:    [ 0.050,  0.050,  0.050,
+                   0.050,  0.050]
+            x1:    [ 25.00,  25.00,  25.00,
+                     25.00,  25.00]
+            err0:  [300.00, 300.00,  2.500,
+                     2.000,  2.000]
+            err1:  [700.00,  700.00, 30.00,
+                     50.00,  60.00]
+        obserr_bound_max: [5.0, 5.0, 10.0, 10.0, 10.0]
+    action:
+      name: reject
+#  Gross check
+  - filter: Background Check
+    filter variables:
+    - name: brightnessTemperature
+      channels: *all_channels
+    where:
+    - variable:
+        name: GeoVaLs/water_area_fraction
+      minvalue: 0.99
+    function absolute threshold:
+    - name: ObsFunction/ObsErrorBoundMW
+      channels: *all_channels
+      options:
+        sensor: *Sensor_ID
+        channels: *all_channels
+        threshold: 2.0
+        obserr_bound_latitude:
+          name: ObsFunction/ObsErrorFactorLatRad
+          options:
+            latitude_parameters: [0.0, 1.0, 0.0, 1.0]
+        obserr_bound_transmittop:
+          name: ObsFunction/ObsErrorFactorTransmitTopRad
+          channels: *all_channels
+          options:
+            channels: *all_channels
+        obserr_bound_topo:
+          name: ObsFunction/ObsErrorFactorTopoRad
+          channels: *all_channels
+          options:
+            channels: *all_channels
+            sensor: *Sensor_ID
+        obserr_function:
+          name: ObsFunction/ObsErrorModelRamp
+          channels: *all_channels
+          options:
+            channels: *all_channels
+            xvar:
+              name: ObsFunction/CLWRetSymmetricMW
+              options:
+                clwret_ch89v: 1
+                clwret_ch166v: 2
+                clwret_types: [ObsValue, HofX]
+                bias_application: HofX
+            x0:    [ 0.050,  0.050,  0.050,
+                   0.050,  0.050]
+            x1:    [ 25.00,  25.00,  25.00,
+                     25.00,  25.00]
+            err0:  [300.00, 300.00,  2.500,
+                     2.000,  2.000]
+            err1:  [350.00,  350.00, 15.00,
+                     25.00,  30.00]
+        obserr_bound_max: [5.0, 5.0, 10.0, 10.0, 10.0]
+    action:
+      name: reject
+  passedBenchmark: 15

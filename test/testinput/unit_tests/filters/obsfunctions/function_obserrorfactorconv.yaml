@@ -1,0 +1,37 @@
+time window:
+  begin: 2020-12-01T09:00:00Z
+  end: 2020-12-01T15:00:00Z
+
+observations:
+- obs operator:
+    name: VertInterp
+    vertical coordinate: air_pressure
+    observation vertical coordinate: pressure
+    interpolation method: log-linear
+  obs space:
+    name: test_obserrorfactorconv
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/converr_vadwind_obs_2020120112_s.nc4
+      obsgrouping:
+        group variables: ["stationIdentification", "dateTime"]
+        sort variable: "pressure"
+        sort order: "descending"  
+    simulated variables: [windEastward]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/converr_vadwind_obs_2020120112_s_out.nc4
+  geovals:
+    filename: Data/ufo/testinput_tier_1/converr_vadwind_geoval_2020120112_s.nc4
+  obs function:
+    name: ObsFunction/ObsErrorFactorConventional
+    variables: [windEastward]
+    tolerance: 1.e-6
+    options:
+      inflate variables: [windEastward] # Required
+      test QCflag: PreQC  # Optional. Default is from filter qcflags     
+      test QCthreshold: 2 # Optonal only when using PreQC flags 
+                          # Default value = 3 for PreQC
+      pressure: "MetaData/pressure"

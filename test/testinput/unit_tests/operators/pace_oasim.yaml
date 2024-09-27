@@ -1,0 +1,25 @@
+time window:
+  begin: 2019-03-21T00:00:00Z
+  end: 2019-03-21T18:00:00Z
+
+observations:
+- obs operator:
+    name: OASIM 
+    CoefficientPath: '../../oasim/test/data'
+  obs space:
+    name: Radiance 
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/pace_radiance_obs_2019032112.nc
+    simulated variables: [radiance]
+    channels: 50-70
+    obsdataout:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/pace_radiance_2019032112_out.nc
+  geovals:
+    filename: Data/ufo/testinput_tier_1/pace_radiance_geovals_2019032112.nc
+  rms ref: 0.270960411
+  tolerance: 1.e-6
+

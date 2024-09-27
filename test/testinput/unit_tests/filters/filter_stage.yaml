@@ -1,0 +1,88 @@
+time window:
+  begin: 2000-01-01T00:00:00Z
+  end: 2030-01-01T00:00:00Z
+
+observations:
+- obs space: &obsspace
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_average_temperature_obs.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
+        sort order: "descending"
+    simulated variables: [airTemperature]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_average_temperature_filter_stage_out.nc4
+
+  obs operator: &obsop
+    name: VertInterp
+    observation alias file: ../resources/namemap/test_name_map.yaml
+    variables:
+    - name: airTemperature
+    vertical coordinate: air_pressure
+    observation vertical coordinate: pressure
+    interpolation method: log-linear
+
+  geovals: &geoval
+    filename: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_average_geovals.nc4
+
+  obs pre filters:
+  - filter: Print Filter Data
+    variables:
+    - variable: ObsValue/airTemperature
+    minimum location: 0
+    maximum location: 6
+  obs prior filters:
+  - filter: Print Filter Data
+    variables:
+    - variable: ObsValue/airTemperature
+      levels: 0
+    minimum location: 0
+    maximum location: 6
+  obs post filters:
+  - filter: Print Filter Data
+    variables:
+    - variable: ObsValue/airTemperature
+    - variable: GeoVaLs/air_temperature
+      levels: 0
+    - variable: HofX/airTemperature
+    minimum location: 0
+    maximum location: 6
+
+  passedBenchmark: 1607
+
+# Use incompatible filter stages, throwing an exception
+- obs space: *obsspace
+  obs operator: *obsop
+  geovals: *geoval
+  obs filters:
+  - filter: Print Filter Data
+  obs pre filters:
+  - filter: Print Filter Data
+  passedBenchmark: 0
+  expectExceptionWithMessage: It is not possible to use both an `obs filters` option and one or more of the `obs pre filters`, `obs prior filters` and `obs post filters` options
+
+# Instantiate a pre filter that requires H(x), throwing an exception
+- obs space: *obsspace
+  obs operator: *obsop
+  geovals: *geoval
+  obs pre filters:
+  - filter: Background Check
+    threshold: 1.0
+
+  expectExceptionWithMessage: Invalid pre filter requested
+
+# Instantiate a prior filter that requires H(x), throwing an exception
+- obs space: *obsspace
+  obs operator: *obsop
+  geovals: *geoval
+  obs prior filters:
+  - filter: Background Check
+    threshold: 1.0
+
+  expectExceptionWithMessage: Invalid prior filter requested

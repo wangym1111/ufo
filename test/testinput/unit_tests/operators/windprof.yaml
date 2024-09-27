@@ -1,0 +1,29 @@
+time window:
+  begin: 2018-04-14T20:30:00Z
+  end: 2018-04-15T03:30:00Z
+
+observations:
+- obs operator:
+    name: VertInterp
+    vertical coordinate: geopotential_height
+    observation vertical coordinate: height
+    interpolation method: linear
+  linear obs operator test:
+    coef TL: 0.1
+    tolerance TL: 1.0e-13
+    tolerance AD: 1.0e-11
+  obs space:
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/windprof_obs_2018041500_m.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/windprof_obs_2018041500_m_verterp_opr_out.nc4
+    simulated variables: [windEastward, windNorthward]
+  geovals:
+    filename: Data/ufo/testinput_tier_1/windprof_geoval_2018041500_m.nc4
+  vector ref: GsiHofX
+  tolerance: 1.0e-05

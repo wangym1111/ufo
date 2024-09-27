@@ -1,0 +1,42 @@
+time window:
+  begin: 2021-05-21T08:59:00Z
+  end: 2021-05-21T15:00:00Z
+
+observations:
+- obs space:
+    name: Potential Temperature from Temperature
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/T2potentialT_conversion_aircraft.nc4
+      obsgrouping:
+        group variables: ["stationIdentification"]
+        sort variable: "dateTime"
+        sort order: "descending"
+    simulated variables: [airTemperature, potentialTemperature]
+    derived variables: [potentialTemperature]
+    observed variables: [airTemperature]
+  obs filters:
+  - filter: Variable Transforms
+    Transform: PotentialTFromT
+    pressure variable: "pressure"
+    temperature variable: "airTemperature"
+  # Copy the potential temperature Obserror to an ObsSpace variable in order to
+  # enable it to be compared to a reference value.
+  - filter: Variable Assignment
+    assignments:
+    - name: ObsErrorForComparison/potentialTemperature
+      type: float
+      source variable:
+        name: ObsErrorData/potentialTemperature
+  compareVariables:
+    - reference:
+        name: ObsValue/potentialTemperature_reference
+      test:
+        name: DerivedObsValue/potentialTemperature
+      relTol: 1.0e-3
+    - reference:
+        name: ObsError/potentialTemperature_reference
+      test:
+        name: ObsErrorForComparison/potentialTemperature
+      relTol: 1.0e-3

@@ -1,0 +1,124 @@
+time window:
+  begin: 2018-04-14T21:00:00Z
+  end: 2018-04-15T03:00:00Z
+
+geovals test:
+- obs space:
+    name: Satwind
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/satwind_obs_2018041500_m.nc4
+    simulated variables: [windEastward, windNorthward]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/satwind_obs_2018041500_m_geovals_spec_out.nc4
+  geovals:
+    filename: Data/ufo/testinput_tier_1/satwind_geoval_2018041500_m.nc4
+  geovals test:
+    state variables: [eastward_wind, northward_wind, air_pressure]
+    tolerance: 0.001
+- obs space:
+    name: amsua_n19
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
+    simulated variables: [brightnessTemperature]
+    channels: 1-10,15
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/amsua_n19_obs_2018041500_m_geovals_spec_out.nc4
+  geovals:
+    filename: Data/ufo/testinput_tier_1/amsua_n19_geoval_2018041500_m.nc4
+  geovals test:
+    state variables:
+    - surface_temperature_where_snow
+    - soil_temperature
+    - volume_fraction_of_condensed_water_in_soil
+    - surface_wind_speed
+    - soil_type
+    - air_temperature
+    - air_pressure
+    - air_pressure_levels
+    - humidity_mixing_ratio
+    tolerance: 0.001
+    one location check:
+      variable: air_temperature
+      indices: [0, 25, 50, 75, 99]
+      values: [249.33, 248.46, 250.24, 252.75, 247.10]
+      tolerance: 0.1
+    reorderzdir check:
+      direction: bottom2top
+      tolerance: 1.0e-12 
+- obs space:
+    name: OzoneLayer 
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sbuv2_n19_obs_2018041500_m.nc4
+    simulated variables: [ozoneTotal]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/sbuv2_n19_obs_2018041500_m_geovals_spec_out.nc4
+  geovals:
+    filename: Data/ufo/testinput_tier_1/sbuv2_n19_geoval_2018041500_m.nc4
+  geovals test:
+    state variables:
+    - mole_fraction_of_ozone_in_air
+    - air_pressure_levels
+    tolerance: 0.001 
+    reorderzdir check:
+      direction: top2bottom
+      tolerance: 1.0e-12 
+
+# section for testGeoVaLsAllocatePutGet
+geovals get test:
+  time window:
+    begin: 2018-04-14T21:00:00Z  # required for initializing SampledLocations from the obs space below
+    end: 2018-04-15T03:00:00Z    # required for initializing SampledLocations from the obs space below
+  obs space:                          # required for initializing SampledLocations to locations from this file
+    name: amsua_n19
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/amsua_n19_obs_2018041500_m_geovals_spec_out.nc4
+    simulated variables: [brightnessTemperature]
+    channels: 1-10,15
+
+multiple sampling methods test:
+  gnlocs: 4
+  sampling methods:
+  - longitudes: [1, 2, 3, 4, 5]
+    latitudes:  [6, 7, 8, 9, 10]
+    datetimes:  ["2001-01-01T00:00:00Z", "2001-01-02T00:00:00Z", "2001-01-03T00:00:00Z",
+                 "2001-01-04T00:00:00Z", "2001-01-05T00:00:00Z"]
+    # This means: Location #0 is sampled by path #0 ("from 0 up to be not including 1"),
+    # location #1 by path #1, location #2 by paths #2 and #3, and location #3 by path #4.
+    paths grouped by location: [[0, 1], [1, 2], [2, 4], [4, 5]]
+  - longitudes: [1, 2, 3, 4, 5, 6]
+    latitudes:  [7, 8, 9, 10, 11, 12]
+    datetimes:  ["2001-01-01T00:00:00Z", "2001-01-02T00:00:00Z", "2001-01-03T00:00:00Z",
+                 "2001-01-04T00:00:00Z", "2001-01-05T00:00:00Z", "2001-01-06T00:00:00Z"]
+    # This collection contains paths sampling multiple locations.
+    paths grouped by location: [[0, 2], [2, 6], [0, 2], [2, 6]]
+  geovals:
+  - variable: air_temperature
+    nlevels: 2
+    sampling method: 0
+  - variable: eastward_wind
+    nlevels: 3
+    sampling method: 1
+  - variable: northward_wind
+    nlevels: 3
+    sampling method: 1
+  - variable: relative_humidity
+    nlevels: 4
+    sampling method: 0

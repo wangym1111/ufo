@@ -1,0 +1,71 @@
+time window:
+  begin: 2021-07-01T08:59:00Z
+  end: 2021-07-01T15:00:00Z
+
+observations:
+- obs space:
+    name: Relative humidity mixing ratio calculation, upper-air variables
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/mixRatio2RH_conversion_aircraft.nc4
+      obsgrouping:
+        group variables: ["stationIdentification"]
+        sort variable: "dateTime"
+        sort order: "descending"
+    simulated variables: [airTemperature, waterVaporMixingRatio]
+  obs filters:
+  - filter: Perform Action
+    filter variables:
+    - name: airTemperature
+    - name: waterVaporMixingRatio
+    action:
+      name: assign error
+      error parameter: 1.0
+  - filter: Variable Transforms
+    Transform: RelativeHumidity
+    Method: UKMOmixingratio
+    AllowSuperSaturation: true
+    pressure variable: "pressure"
+    temperature variable: "airTemperature"
+    relative humidity variable: "relativeHumidity"
+    water vapor mixing ratio variable: "waterVaporMixingRatio"
+  compareVariables:
+    - reference:
+        name: TestReference/relativeHumidity
+      test:
+        name: DerivedObsValue/relativeHumidity
+      relTol: 1.0e-5
+- obs space:
+    name: Relative humidity mixing ratio calculation, upper-air variables, no super saturation
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/mixRatio2RH_conversion_aircraft_nosupersat.nc4
+      obsgrouping:
+        group variables: ["stationIdentification"]
+        sort variable: "dateTime"
+        sort order: "descending"
+    simulated variables: [airTemperature, waterVaporMixingRatio]
+  obs filters:
+  - filter: Perform Action
+    filter variables:
+    - name: airTemperature
+    - name: waterVaporMixingRatio
+    action:
+      name: assign error
+      error parameter: 1.0
+  - filter: Variable Transforms
+    Transform: RelativeHumidity
+    Method: UKMOmixingratio
+    AllowSuperSaturation: false
+    pressure variable: "pressure"
+    temperature variable: "airTemperature"
+    relative humidity variable: "relativeHumidity"
+    water vapor mixing ratio variable: "waterVaporMixingRatio"
+  compareVariables:
+    - reference:
+        name: TestReference/relativeHumidity
+      test:
+        name: DerivedObsValue/relativeHumidity
+      relTol: 1.0e-5

@@ -1,0 +1,72 @@
+time window:
+  begin: 2020-12-31T23:59:00Z
+  end: 2021-01-01T00:01:00Z
+
+observations:
+- obs space:
+    name: Surface
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/grosserrorwholereport_filter_testdata.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/grosserrorwholereport_filter_test_out.nc4
+    simulated variables: [surfacePressure,
+                          airTemperatureAt2M,
+                          windEastward,
+                          windNorthward,
+                          relativeHumidityAt2M]
+  obs filters:
+  - filter: Bayesian Whole Report
+    filter variables:
+    - name: surfacePressure
+      options:
+        probability_density_bad: 0.1
+        bogus_probability_density_bad: 0.1
+    - name: airTemperatureAt2M
+      options:
+        probability_density_bad: 0.1
+    - name: windEastward
+      options:
+        probability_density_bad: 0.1
+        synop_probability_density_bad: 0.1
+        bogus_probability_density_bad: 0.1
+    - name: windNorthward
+      options:
+        not_used_in_whole_report: true
+        second_component_of_two: true
+    - name: relativeHumidityAt2M
+      options:
+        not_used_in_whole_report: true
+        probability_density_bad: 0.1
+    PGE threshold: 0.15
+  passedBenchmark: 11
+  compareVariables: #  test output matches ops
+    - reference:
+        name: GrossErrorProbabilityTestReference/surfacePressure
+      test:
+        name: GrossErrorProbability/surfacePressure
+      absTol: 5.0e-4
+    - reference:
+       name: GrossErrorProbabilityTestReference/airTemperatureAt2M
+      test:
+        name: GrossErrorProbability/airTemperatureAt2M
+      absTol: 5.0e-5
+    - reference:
+        name: GrossErrorProbabilityTestReference/windEastward
+      test:
+        name: GrossErrorProbability/windEastward
+      absTol: 5.0e-5
+    - reference:
+       name: GrossErrorProbabilityTestReference/windNorthward
+      test:
+       name: GrossErrorProbability/windNorthward
+      absTol: 5.0e-5
+    - reference:
+       name: GrossErrorProbabilityTestReference/relativeHumidityAt2M
+      test:
+       name: GrossErrorProbability/relativeHumidityAt2M
+      absTol: 5.0e-5
+

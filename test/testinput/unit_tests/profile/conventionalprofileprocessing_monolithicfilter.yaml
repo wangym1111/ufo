@@ -1,0 +1,42 @@
+#
+#=== Profile processing using one monolithic filter ===#
+#
+
+time window:
+  begin: 2018-04-14T20:30:00Z
+  end: 2018-04-15T03:30:00Z
+
+observations:
+- obs space:
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
+        sort order: "descending"
+    simulated variables: [airTemperature, height]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_monolithic_filter_out.nc4
+  geovals:
+    filename: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_geovals.nc4
+  obs filters:
+  - filter: Conventional Profile Processing
+    filter variables:
+    - name: airTemperature
+    - name: height
+    Checks: ["Basic", "SamePDiffT", "Sign", "UnstableLayer", "Interpolation", "Hydrostatic"]
+    maxlev: 10000
+    compareWithOPS: false
+    flagBasicChecksFail: true
+    PrintStationID: true
+    SCheck_CorrectT: true
+    HCheck_CorrectZ: true
+  HofX: HofX
+  passedBenchmark: 901
+  benchmarkFlag: 24
+  flaggedBenchmark: 10057

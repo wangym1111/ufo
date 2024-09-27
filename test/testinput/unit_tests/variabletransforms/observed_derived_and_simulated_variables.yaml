@@ -1,0 +1,89 @@
+# This yaml is used to test that differnt variables can be used in the 
+# observation processing compared to the h(x) calculation. 
+
+time window:
+  begin: 2021-05-21T00:00:00Z
+  end: 2021-05-21T23:00:00Z
+
+observations:
+- obs space:
+    name: Surface
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/PStar_obs_20210521T1200Z.nc4
+    observed variables: [stationPressure, pressureReducedToMeanSeaLevel, standardPressure]
+    derived variables: [surfacePressure]
+    simulated variables: [surfacePressure]
+  geovals:
+    filename: Data/ufo/testinput_tier_1/PStar_geovals_20210521T1200Z.nc4
+  obs operator:
+    name: Identity
+    observation alias file: ../resources/namemap/test_name_map.yaml
+
+  obs filters:
+  - filter: Bounds Check
+    filter variables:
+    - name: ObsValue/pressureReducedToMeanSeaLevel
+    minvalue: 0.00001
+
+  - filter: Bounds Check
+    filter variables:
+    - name: ObsValue/stationPressure
+    minvalue: 0.00001
+
+  - filter: BlackList
+    filter variables:
+    - name: stationPressure
+    where:
+    - variable:
+        name: DiagnosticFlags/PermanentReject/stationPressure
+      value: is_true
+
+  - filter: BlackList
+    filter variables:
+    - name: standardPressure
+    where:
+    - variable:
+        name: DiagnosticFlags/PermanentReject/standardPressure
+      value: is_true
+
+  - filter: BlackList
+    filter variables:
+    - name: pressureReducedToMeanSeaLevel
+    where:
+    - variable:
+        name: DiagnosticFlags/PermanentReject/pressureReducedToMeanSeaLevel
+      value: is_true
+
+  - filter: Variable Transforms
+    Transform: PStar
+
+  compareVariables:
+    - reference:
+        name: TestReference/PStarErr
+      test:
+        name: DerivedObsError/surfacePressure
+      absTol: 1.0e-5
+    - reference:
+        name: TestReference/PStar_PGE
+      test:
+        name: GrossErrorProbability/surfacePressure
+      absTol: 1.0e-5
+    - reference:
+        name: TestReference/PStar
+      test:
+        name: DerivedObsValue/surfacePressure
+      relTol: 1.0e-5
+    - reference:
+        name: TestReference/PmslUsedFlag
+      test:
+        name: DiagnosticFlags/PmslUsed/surfacePressure
+    - reference:
+        name: TestReference/PstdUsedFlag
+      test:
+        name: DiagnosticFlags/PstdUsed/surfacePressure
+    - reference:
+        name: TestReference/PstnUsedFlag
+      test:
+        name: DiagnosticFlags/PstnUsed/surfacePressure

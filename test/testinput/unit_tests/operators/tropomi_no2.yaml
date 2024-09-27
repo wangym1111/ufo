@@ -1,0 +1,58 @@
+time window:
+  begin: '2020-09-03T15:00:00Z'
+  end: '2020-09-03T21:00:00Z'
+observations:
+- obs space:
+    name: NO2
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/tropomi_no2_tropo_2020090318_m.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/tropomi_no2_2020090318_m_opr_out1.nc4
+    simulated variables: [nitrogendioxideColumn]
+  obs operator:
+    name: ColumnRetrieval
+    nlayers_retrieval: 34
+    tracer variables: [volume_mixing_ratio_of_no2]
+    isApriori: false
+    isAveragingKernel: true
+    stretchVertices: topbottom #options: top, bottom, topbottom, none
+    model units coeff: 1e-6 # ppmv to 1/1
+  linear obs operator test:
+    coef TL: 1.0e-8
+    tolerance TL: 1.0e-12
+    tolerance AD: 1.0e-13
+  geovals:
+    filename: Data/ufo/testinput_tier_1/tropomi_no2_geoval_2020090318_m.nc4
+  rms ref: 0.00010376434640269363
+  tolerance: 1.0e-7
+- obs space:
+    name: NO2
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/tropomi_no2_total_2020090318_m.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/tropomi_no2_2020090318_m_opr_out2.nc4
+    simulated variables: [nitrogendioxideTotal]
+  obs operator:
+    name: ColumnRetrieval
+    nlayers_retrieval: 34
+    tracer variables: [volume_mixing_ratio_of_no2]
+    isApriori: false
+    isAveragingKernel: true
+    stretchVertices: topbottom #options: top, bottom, topbottom, none
+    model units coeff: 1e-6 # ppmv to 1/1
+  linear obs operator test:
+    coef TL: 1.0e-8
+    tolerance TL: 1.0e-12
+    tolerance AD: 1.0e-13
+  geovals:
+    filename: Data/ufo/testinput_tier_1/tropomi_no2_geoval_2020090318_m.nc4
+  rms ref: 6.7871795063608674e-05
+  tolerance: 1.0e-7

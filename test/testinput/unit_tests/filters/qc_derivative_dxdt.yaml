@@ -1,0 +1,23 @@
+time window:
+  begin: 2018-04-14T20:30:00Z
+  end: 2018-04-15T03:30:00Z
+
+observations:
+- obs space:
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sondes_tv_obs_2018041500_m.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "dateTime"
+        sort order: "ascending"
+    simulated variables: [virtualTemperature]
+  obs filters:
+  - filter: Derivative Check
+    independent: dateTime
+    dependent: distance # d(distance)/d(time) is speed
+    minvalue: 1. # m/s
+    maxvalue: 50.
+  passedBenchmark: 250

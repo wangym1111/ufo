@@ -1,0 +1,28 @@
+#
+#=== Profile processing: unit tests of ProfileDataHolder ===#
+#
+
+ProfileDataHolder:
+  time window:
+    begin: 2000-01-01T00:00:00Z
+    end: 2030-01-01T00:00:00Z
+  obs space:
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_oneprofile.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+    simulated variables: [airTemperature]
+    extension:
+      allocate companion records with length: 71
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_oneprofile_dataholder_out.nc4
+  geovals:
+    filename: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_oneprofile_geovals.nc4
+  Conventional Profile Processing:
+    Checks: ["Basic"]
+  testProfileDataHolder: true

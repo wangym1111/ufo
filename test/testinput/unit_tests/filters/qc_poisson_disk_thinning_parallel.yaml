@@ -1,0 +1,140 @@
+# Test names have numeric prefixes to force them to be run in the specified order.
+01 Seed from clock, inefficient distribution:
+  time window:
+    begin: 2000-01-01T00:00:00Z
+    end: 2030-01-01T00:00:00Z
+  obs space:
+    name: Aircraft
+    distribution:
+      name: InefficientDistribution
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+    simulated variables: [airTemperature]
+  Poisson Disk Thinning:
+    min_vertical_spacing: 1000
+    shuffle: true
+    pressure_coordinate: pressure
+    pressure_group: MetaData
+
+02 Seed from clock, inefficient distribution, categories:
+  time window:
+    begin: 2000-01-01T00:00:00Z
+    end: 2030-01-01T00:00:00Z
+  obs space:
+    name: Aircraft
+    distribution:
+      name: InefficientDistribution
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+    simulated variables: [airTemperature]
+  Poisson Disk Thinning:
+    min_vertical_spacing: 1000
+    category_variable:
+      name: MetaData/round
+    shuffle: true
+    pressure_coordinate: pressure
+    pressure_group: MetaData
+
+03 Seed from clock, inefficient distribution, categories, records:
+  time window:
+    begin: 2000-01-01T00:00:00Z
+    end: 2030-01-01T00:00:00Z
+  obs space:
+    name: Aircraft
+    distribution:
+      name: InefficientDistribution
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+      obsgrouping:
+        group variables: [ round ]
+    simulated variables: [airTemperature]
+  Poisson Disk Thinning:
+    min_vertical_spacing: 1000
+    category_variable:
+      name: MetaData/round
+    shuffle: true
+    pressure_coordinate: pressure
+    pressure_group: MetaData
+
+04 Seed from clock, round-robin distribution:
+  time window:
+    begin: 2000-01-01T00:00:00Z
+    end: 2030-01-01T00:00:00Z
+  obs space:
+    name: Aircraft
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+    simulated variables: [airTemperature]
+  Poisson Disk Thinning:
+    min_vertical_spacing: 1000
+    shuffle: true
+    pressure_coordinate: pressure
+    pressure_group: MetaData
+
+05 Seed from clock, round-robin distribution, categories:
+  time window:
+    begin: 2000-01-01T00:00:00Z
+    end: 2030-01-01T00:00:00Z
+  obs space:
+    name: Aircraft
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+    simulated variables: [airTemperature]
+  Poisson Disk Thinning:
+    min_vertical_spacing: 1000
+    category_variable:
+      name: MetaData/round
+    shuffle: true
+    pressure_coordinate: pressure
+    pressure_group: MetaData
+
+06 Seed from clock, round-robin distribution, categories, records:
+  time window:
+    begin: 2000-01-01T00:00:00Z
+    end: 2030-01-01T00:00:00Z
+  obs space:
+    name: Aircraft
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+      obsgrouping:
+        group variables: [ round ]
+    simulated variables: [airTemperature]
+  Poisson Disk Thinning:
+    min_vertical_spacing: 1000
+    category_variable:
+      name: MetaData/round
+    shuffle: true
+    pressure_coordinate: pressure
+    pressure_group: MetaData
+
+07 Fixed seed, round-robin distribution, categories:
+  time window:
+    begin: 2000-01-01T00:00:00Z
+    end: 2030-01-01T00:00:00Z
+  obs space:
+    name: Aircraft
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+    simulated variables: [airTemperature]
+  Poisson Disk Thinning:
+    min_vertical_spacing: 1000
+    category_variable:
+      name: MetaData/round
+    shuffle: true
+    random_seed: 12345
+    pressure_coordinate: pressure
+    pressure_group: MetaData

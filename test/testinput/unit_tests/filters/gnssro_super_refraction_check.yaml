@@ -1,0 +1,112 @@
+time window:
+  begin: 2022-08-31T21:00:00Z
+  end: 2022-09-01T03:00:00Z
+
+observations:
+- obs operator:
+    name: GnssroBendMetOffice
+    vert_interp_ops: true
+    pseudo_ops: true
+    min_temp_grad: 1.0e-6
+  obs space:
+    name: GnssroBnd
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/gnssro_obs_6prof_2022090100.nc4
+      obsgrouping:
+        group variables: ["sequenceNumber"]
+        sort variable: "impactHeightRO"
+        sort order: "descending"
+    simulated variables: [bendingAngle]
+    obsdataout:
+      engine:
+        type: H5File
+        obsfile: Data/gnssro_6prof_2022090100_superrefractioncheck_out.nc4
+  geovals:
+    filename: Data/ufo/testinput_tier_1/gnssro_geoval_6prof_2022090100.nc4
+  obs pre filters:
+  - filter: Create Diagnostic Flags
+    flags:
+    - name: srCheckMF
+    - name: srCheckImpp
+    - name: srCheckImppProfile
+    - name: srCheckProfMaxDiff
+    - name: srCheckNBAM
+  obs post filters:
+  - filter: Obs Refractivity Gradient Check
+    filter variables:
+    - name: bendingAngle
+    gradient min: -0.05
+    gradient max: -1.0e-6
+    second derivative: 0.0001
+    action:
+      name: set
+      flag: srCheckMF
+  - filter: Impact Parameter Check
+    filter variables:
+    - name: bendingAngle
+    threshold: 10
+    profile check: false
+    action:
+      name: set
+      flag: srCheckImpp
+  - filter: Impact Parameter Check
+    filter variables:
+    - name: bendingAngle
+    threshold: 10
+    profile check: true
+    action:
+      name: set
+      flag: srCheckImppProfile
+  - filter: Profile Max Difference Check
+    filter variables:
+    - name: bendingAngle
+    variable:
+      name: HofX/bendingAngle
+    observation height:
+      name: MetaData/impactHeightRO
+    max check height: 18000
+    threshold: 0.0055
+    bin size: 1000
+    action:
+      name: set
+      flag: srCheckProfMaxDiff
+  - filter: Super Refraction Check NBAM
+    filter variables:
+    - name: bendingAngle
+    step: 2
+    threshold step1: 0.75
+    threshold step2: 0.5
+    max obs value: 0.03
+    check height: 5000
+    close layers: 5
+    action:
+      name: set
+      flag: srCheckNBAM
+  compareVariables:                       # test output matches precalculated values
+  - reference:
+      name: TestReference/srCheckMF
+    test:
+      name: DiagnosticFlags/srCheckMF/bendingAngle
+    absTol: 1.0e-5
+  - reference:
+      name: TestReference/srCheckImpp
+    test:
+      name: DiagnosticFlags/srCheckImpp/bendingAngle
+    absTol: 1.0e-5
+  - reference:
+      name: TestReference/srCheckImppProfile
+    test:
+      name: DiagnosticFlags/srCheckImppProfile/bendingAngle
+    absTol: 1.0e-5
+  - reference:
+      name: TestReference/srCheckProfMaxDiff
+    test:
+      name: DiagnosticFlags/srCheckProfMaxDiff/bendingAngle
+    absTol: 1.0e-5
+  - reference:
+      name: TestReference/srCheckNBAM
+    test:
+      name: DiagnosticFlags/srCheckNBAM/bendingAngle
+    absTol: 1.0e-5

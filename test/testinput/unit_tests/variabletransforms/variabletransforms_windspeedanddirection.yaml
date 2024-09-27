@@ -1,0 +1,77 @@
+time window:
+  begin: 2018-04-14T20:00:00Z
+  end: 2018-04-15T03:00:00Z
+
+observations:
+- obs space:
+    name: Satwind
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/wind_unit_transforms_2018041500.nc4
+#    obsdataout:
+#       engine:
+#         type: H5File
+#         obsfile: Data/windspeedanddirection_2018041500_output.nc4
+    simulated variables: [windEastward, windNorthward]
+  obs filters:
+    - filter: Variable Transforms
+      Transform: WindSpeedAndDirection
+      UseValidDataOnly: false
+  # how many data points will pass the filter? Should pass for all present obs
+  passedBenchmark: 148
+  compareVariables:            #  test output matches precalculated values
+    - reference:
+        name: TestReference/windSpeed
+      test:
+        name: DerivedObsValue/windSpeed
+      absTol: 5.0e-6
+    - reference:
+        name: TestReference/windDirection
+      test:
+        name: DerivedObsValue/windDirection
+      absTol: 5.0e-5
+
+# Check the filter can create derived variables and sets correct QC flags
+- obs space:
+    name: Sonde
+    #  Ioda file we want to apply the filter to
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sondes_obs_2018041500_s.nc4
+    simulated variables: [windSpeed, windDirection]
+    observed variables: []
+    derived variables: [windSpeed, windDirection]
+  obs filters:
+  - filter: Variable Transforms
+    Transform: WindSpeedAndDirection
+  - filter: Perform Action
+    action:
+      name: assign error
+      error parameter: 1
+  failedBenchmark: 50  # there should be 25 missing values in each of the two simulated variables
+
+- obs space:
+    name: Surface
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/wind_unit_transforms_surface.nc4
+    simulated variables: [windSpeedAt10M,windDirectionAt10M]
+  obs filters:
+    - filter: Variable Transforms
+      Transform: WindSpeedAndDirection
+      eastward wind variable: windEastwardAt10M
+      northward wind variable: windNorthwardAt10M
+  compareVariables:            #  test output matches precalculated values
+    - reference:
+        name: TestReference/windSpeedAt10M
+      test:
+        name: DerivedObsValue/windSpeedAt10M
+      absTol: 5.0e-6
+    - reference:
+        name: TestReference/windDirectionAt10M
+      test:
+        name: DerivedObsValue/windDirectionAt10M
+      absTol: 5.0e-5

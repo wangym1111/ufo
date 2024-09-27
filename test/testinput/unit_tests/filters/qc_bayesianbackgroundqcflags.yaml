@@ -1,0 +1,80 @@
+time window:
+  begin: 2019-06-14T21:00:00Z
+  end: 2019-06-15T02:59:59Z
+
+observations:
+- obs space:
+    name: Bayesian background QC flags
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_bayesian_background_qc_flags.nc
+    simulated variables: [airTemperature, windEastward, windNorthward, geopotentialHeight]
+  obs filters:
+  - filter: Bayesian Background QC Flags
+    filter variables:
+    - name: airTemperature
+    - name: windEastward
+    - name: windNorthward
+    - name: geopotentialHeight
+  passedBenchmark: 1830
+  compareVariables:
+    - reference:
+        name: QCFlags/OPS_airTemperature
+      test:
+        name: QCFlags/airTemperature
+    - reference:
+        name: QCFlags/OPS_windEastward
+      test:
+        name: QCFlags/windEastward
+    - reference:
+        name: QCFlags/OPS_windNorthward
+      test:
+        name: QCFlags/windNorthward
+    - reference:
+        name: QCFlags/OPS_geopotentialHeight
+      test:
+        name: QCFlags/geopotentialHeight
+- obs space:
+    name: Missing QC flags
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_bayesian_background_qc_flags_missing_variables.nc
+    simulated variables: [airTemperature]
+  obs filters:
+  - filter: Bayesian Background QC Flags
+    filter variables:
+    - name: airTemperature
+  expectExceptionWithMessage: QCFlags/airTemperature not present
+  passedBenchmark: 0
+- obs space:
+    name: Missing PGE
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_bayesian_background_qc_flags_missing_variables.nc
+    simulated variables: [windEastward]
+  obs filters:
+  - filter: Bayesian Background QC Flags
+    filter variables:
+    - name: windEastward
+  expectExceptionWithMessage: GrossErrorProbability/windEastward must be present
+- obs space:
+    name: Bayesian background QC flags with where clause
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_bayesian_background_qc_flags.nc
+    simulated variables: [airTemperature]
+  obs filters:
+  - filter: Bayesian Background QC Flags
+    filter variables:
+    - name: airTemperature
+    # Applies the filter to all but the first profile in the sample.
+    # As a result an extra 69 observations pass.
+    where:
+    - variable:
+        name: MetaData/latitude
+      maxvalue: 0.0
+  passedBenchmark: 93

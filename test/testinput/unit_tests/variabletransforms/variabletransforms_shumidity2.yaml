@@ -1,0 +1,42 @@
+time window:
+  begin: 2021-07-31T23:00:00Z
+  end: 2021-08-01T01:00:00Z
+
+observations:
+- obs space:
+   name: test_specificHumidity
+   obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/instruments/conventional/buoy_wmo_multi.nc
+#   obsdataout:
+#      engine:
+#        type: H5File
+#        obsfile: Data/buoy_wmo_multi.nc
+   simulated variables: [dewPointTemperature, airTemperature, stationPressure, specificHumidity]
+   derived variables: [specificHumidity]
+   observed variables: [dewPointTemperature, airTemperature, stationPressure]
+  obs filters:
+  - filter: Variable Transforms
+    Transform: "SpecificHumidity"
+    pressure variable: stationPressure
+    dew point temperature variable: dewPointTemperature 
+    specific humidity variable: specificHumidity
+    temperature variable: airTemperature 
+    Formulation: Walko
+
+  - filter: Perform Action
+    filter variables:
+    - name: specificHumidity
+    action:
+      name: assign error
+      error parameter: 0.5E-3
+
+  compareVariables:               # test output matches precalculated values
+    - reference:
+        name: TestReference/specificHumidity
+      test:
+        name: DerivedObsValue/specificHumidity
+      absTol: 1.0e-7
+
+  passedBenchmark: 2     # Only 2 of nlocs (39) have a surface pressure

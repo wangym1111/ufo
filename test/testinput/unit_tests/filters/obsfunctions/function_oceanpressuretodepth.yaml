@@ -1,0 +1,19 @@
+time window:
+  begin: 2017-12-31T21:00:00Z
+  end: 2030-01-01T03:00:00Z
+
+observations:
+- obs space:
+    name: Ocean pressure to depth conversion
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/ocean_pressure_depth_testdata.nc4
+    simulated variables: [airTemperature, waterPressure]
+  obs function:
+    name: ObsFunction/OceanPressureToDepth
+    variables: [depthBelowWaterSurface]
+    options:
+      pressure variable: ObsValue/waterPressure
+    tolerance: 1.0e-6
+    expect missing value locations to match: true

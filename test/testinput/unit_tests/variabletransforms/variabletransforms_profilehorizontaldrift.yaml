@@ -1,0 +1,168 @@
+time window:
+  begin: 2019-06-14T21:00:00Z
+  end: 2019-06-15T03:00:00Z
+
+observations:
+- obs space:
+    name: Radiosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_profile_horizontal_drift.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
+        sort order: "descending"
+    simulated variables: [geopotentialHeight, windSpeed, windDirection]
+  obs filters:
+    - filter: Variable Transforms
+      Transform: ProfileHorizontalDrift
+      height coordinate: height
+      # Exclude BUFR sondes, whose position has already been measured.
+      where:
+      - variable:
+          name: MetaData/ObsType
+        is_not_in: 50500
+  compareVariables:
+    - reference:
+        name: TestReference/latitude
+      test:
+        name: MetaData/latitude
+      absTol: 1.0e-4
+    - reference:
+        name: TestReference/longitude
+      test:
+        name: MetaData/longitude
+      absTol: 1.0e-4
+    - reference:
+        name: TestReference/dateTime
+      test:
+        name: MetaData/dateTime
+
+# The same test using 'height' as the vertical coordinate.
+- obs space:
+    name: Radiosonde, height as vertical coordinate
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_profile_horizontal_drift.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
+        sort order: "descending"
+    simulated variables: [height, windSpeed, windDirection]
+  obs filters:
+    - filter: Variable Transforms
+      Transform: ProfileHorizontalDrift
+      height coordinate: height
+      # Exclude BUFR sondes, whose position has already been measured.
+      where:
+      - variable:
+          name: MetaData/ObsType
+        is_not_in: 50500
+  compareVariables:
+    - reference:
+        name: TestReference/latitude
+      test:
+        name: MetaData/latitude
+      absTol: 1.0e-4
+    - reference:
+        name: TestReference/longitude
+      test:
+        name: MetaData/longitude
+      absTol: 1.0e-4
+    - reference:
+        name: TestReference/dateTime
+      test:
+        name: MetaData/dateTime
+
+# The sample is not grouped into profiles, throwing an exception.
+- obs space:
+    name: Sample not grouped into profiles
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_profile_horizontal_drift.nc4
+      obsgrouping:
+        sort variable: "pressure"
+        sort order: "descending"
+    simulated variables: [geopotentialHeight, windSpeed, windDirection]
+  obs filters:
+    - filter: Variable Transforms
+      Transform: ProfileHorizontalDrift
+      height coordinate: height
+  expectExceptionWithMessage: Group variables configuration is empty
+
+# The profiles are not sorted by air pressure, throwing an exception.
+- obs space:
+    name: Profiles not sorted by air pressure
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_profile_horizontal_drift.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort order: "descending"
+    simulated variables: [geopotentialHeight, windSpeed, windDirection]
+  obs filters:
+    - filter: Variable Transforms
+      Transform: ProfileHorizontalDrift
+      height coordinate: height
+  expectExceptionWithMessage: Sort variable must be air_pressure
+
+# The profiles are not sorted in descending order, throwing an exception.
+- obs space:
+    name: Profiles not sorted in descending order
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_profile_horizontal_drift.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
+        sort order: "ascending"
+    simulated variables: [geopotentialHeight, windSpeed, windDirection]
+  obs filters:
+    - filter: Variable Transforms
+      Transform: ProfileHorizontalDrift
+      height coordinate: height
+  expectExceptionWithMessage: Profiles must be sorted in descending order
+
+# Do not require pressures to be sorted in descending order.
+# (Still perform the sort, which allows the same test data set to be used.)
+- obs space:
+    name: Do not require pressures to be sorted in descending order
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_profile_horizontal_drift.nc4
+      obsgrouping:
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
+        sort order: "descending"
+    simulated variables: [geopotentialHeight, windSpeed, windDirection]
+  obs filters:
+    - filter: Variable Transforms
+      Transform: ProfileHorizontalDrift
+      height coordinate: height
+      require descending pressure sort: false
+      # Exclude BUFR sondes, whose position has already been measured.
+      where:
+      - variable:
+          name: MetaData/ObsType
+        is_not_in: 50500
+  compareVariables:
+    - reference:
+        name: TestReference/latitude
+      test:
+        name: MetaData/latitude
+      absTol: 1.0e-4
+    - reference:
+        name: TestReference/longitude
+      test:
+        name: MetaData/longitude
+      absTol: 1.0e-4
+    - reference:
+        name: TestReference/dateTime
+      test:
+        name: MetaData/dateTime
